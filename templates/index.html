@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Predictify ML is an advanced Stock Price Prediction dashboard utilizing Machine Learning models: Linear Regression, Random Forest, and LSTM networks to forecast market trends.">
+    <title>Predictify ML - Stock Price Prediction Dashboard</title>
+    <!-- Google Fonts: Inter & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- ApexCharts CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Background glow elements for futuristic aesthetic -->
+    <div class="glow-bg-1"></div>
+    <div class="glow-bg-2"></div>
+
+    <div class="app-container">
+        <!-- Header Section -->
+        <header class="app-header">
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-chart-line-up"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>Predictify <span>ML</span></h1>
+                    <p>Stock Price Forecasting & Technical Analysis Dashboard</p>
+                </div>
+            </div>
+            
+            <!-- Search & Controls -->
+            <div class="search-container">
+                <form id="search-form" class="search-form">
+                    <div class="search-input-wrapper">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input type="text" id="ticker-input" placeholder="Search Ticker (e.g. AAPL, TSLA, MSFT)..." required>
+                    </div>
+                    <button type="submit" id="search-btn">
+                        <span>Analyze</span>
+                        <i class="fa-solid fa-circle-notch fa-spin loading-icon" style="display: none;"></i>
+                    </button>
+                    <button type="button" id="theme-toggle-btn" class="theme-toggle-btn" title="Toggle Light/Dark Theme">
+                        <i class="fa-solid fa-moon"></i>
+                    </button>
+                </form>
+            </div>
+        </header>
+
+        <!-- Quick Select Tickers -->
+        <section class="quick-tickers-section">
+            <label>Popular Symbols:</label>
+            <div id="quick-tickers-list" class="quick-tickers-list">
+                <!-- Ticker pills generated dynamically by JS -->
+                <div class="ticker-skeleton-pill"></div>
+                <div class="ticker-skeleton-pill"></div>
+                <div class="ticker-skeleton-pill"></div>
+                <div class="ticker-skeleton-pill"></div>
+            </div>
+        </section>
+
+        <!-- Main Dashboard Loader -->
+        <div id="dashboard-loader" class="dashboard-loader" style="display: none;">
+            <div class="spinner">
+                <div class="double-bounce1"></div>
+                <div class="double-bounce2"></div>
+            </div>
+            <p id="loader-message">Fetching historical data and training models (LSTM might take a few seconds)...</p>
+        </div>
+
+        <!-- Dashboard Content Grid -->
+        <main id="dashboard-content" class="dashboard-content">
+            
+            <!-- Row 1: Stock Status & Quick Stats -->
+            <section class="stats-grid">
+                <!-- Stat Card 1: Live Closing Price -->
+                <div class="stat-card glass-card" id="card-price">
+                    <div class="card-header">
+                        <span class="card-title">Closing Price</span>
+                        <div class="card-icon price-icon"><i class="fa-solid fa-wallet"></i></div>
+                    </div>
+                    <div class="card-body">
+                        <h2 class="stat-value" id="stock-price">-</h2>
+                        <span class="stat-change" id="stock-change">-</span>
+                    </div>
+                </div>
+
+                <!-- Stat Card 2: Technical Signal Recommendation -->
+                <div class="stat-card glass-card" id="card-signal">
+                    <div class="card-header">
+                        <span class="card-title">Technical Signal</span>
+                        <div class="card-icon signal-icon"><i class="fa-solid fa-compass"></i></div>
+                    </div>
+                    <div class="card-body">
+                        <h2 class="stat-value signal-value" id="signal-badge">NEUTRAL</h2>
+                        <span class="stat-desc" id="signal-reason">Calculating indicators...</span>
+                    </div>
+                </div>
+
+                <!-- Stat Card 3: RSI Assessment -->
+                <div class="stat-card glass-card" id="card-rsi">
+                    <div class="card-header">
+                        <span class="card-title">RSI (14 Days)</span>
+                        <div class="card-icon rsi-icon"><i class="fa-solid fa-wave-square"></i></div>
+                    </div>
+                    <div class="card-body">
+                        <h2 class="stat-value" id="rsi-value">-</h2>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" id="rsi-progress" style="width: 0%;"></div>
+                        </div>
+                        <span class="stat-desc" id="rsi-status">-</span>
+                    </div>
+                </div>
+
+                <!-- Stat Card 4: MACD Assessment -->
+                <div class="stat-card glass-card" id="card-macd">
+                    <div class="card-header">
+                        <span class="card-title">MACD Crossover</span>
+                        <div class="card-icon macd-icon"><i class="fa-solid fa-arrow-right-arrow-left"></i></div>
+                    </div>
+                    <div class="card-body">
+                        <h2 class="stat-value" id="macd-status">-</h2>
+                        <span class="stat-desc" id="macd-value">-</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Row 2: Chart Area & Overlay Toggles -->
+            <section class="chart-section glass-card">
+                <div class="chart-header">
+                    <div class="chart-title-group">
+                        <h3 id="chart-main-title">Stock Price Prediction Chart</h3>
+                        <p class="chart-subtitle">5-Year Historical Performance with 10-Day Future Forecasts</p>
+                    </div>
+                    
+                    <!-- Chart Toggles -->
+                    <div class="chart-controls">
+                        <!-- Chart Type Selection -->
+                        <div class="toggle-group-title">Chart Type:</div>
+                        <div class="toggle-buttons">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggle-chart-type">
+                                <span class="slider"></span>
+                                <span class="label-text">Candles</span>
+                            </label>
+                        </div>
+
+                        <!-- Toggles Dropdown or Flex Menu -->
+                        <div class="toggle-group-title ml-2">Overlays:</div>
+                        <div class="toggle-buttons">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggle-sma20" checked>
+                                <span class="slider"></span>
+                                <span class="label-text">SMA 20</span>
+                            </label>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggle-sma50">
+                                <span class="slider"></span>
+                                <span class="label-text">SMA 50</span>
+                            </label>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggle-ema20">
+                                <span class="slider"></span>
+                                <span class="label-text">EMA 20</span>
+                            </label>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggle-bb">
+                                <span class="slider"></span>
+                                <span class="label-text">B-Bands</span>
+                            </label>
+                        </div>
+                        <div class="toggle-group-title ml-2">Models:</div>
+                        <div class="toggle-buttons">
+                            <label class="toggle-switch model-switch lr-switch">
+                                <input type="checkbox" id="toggle-lr" checked>
+                                <span class="slider"></span>
+                                <span class="label-text">Lin Reg</span>
+                            </label>
+                            <label class="toggle-switch model-switch rf-switch">
+                                <input type="checkbox" id="toggle-rf" checked>
+                                <span class="slider"></span>
+                                <span class="label-text">Random Forest</span>
+                            </label>
+                            <label class="toggle-switch model-switch lstm-switch">
+                                <input type="checkbox" id="toggle-lstm" checked>
+                                <span class="slider"></span>
+                                <span class="label-text">LSTM (DL)</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Closing Price & Forecasting Chart Wrapper -->
+                <div class="chart-wrapper">
+                    <div id="mainChart"></div>
+                </div>
+            </section>
+
+            <!-- Row 3: Model Metrics & Day Forecast Data -->
+            <section class="details-grid">
+                <!-- Column 1: Model Comparison metrics -->
+                <div class="details-card glass-card">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-scale-balanced"></i> Model Performance Analysis</h3>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table" id="metrics-table">
+                            <thead>
+                                <tr>
+                                    <th>Model Name</th>
+                                    <th>RMSE ($) <i class="fa-solid fa-circle-question" title="Root Mean Squared Error (lower is better)"></i></th>
+                                    <th>MAE ($) <i class="fa-solid fa-circle-question" title="Mean Absolute Error (lower is better)"></i></th>
+                                    <th>R2 Score <i class="fa-solid fa-circle-question" title="Coefficient of Determination (closer to 1.0 is better)"></i></th>
+                                    <th>Evaluation</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr id="metric-row-lr">
+                                    <td class="model-name-cell"><span class="dot lr-dot"></span> Linear Regression</td>
+                                    <td class="metric-rmse">-</td>
+                                    <td class="metric-mae">-</td>
+                                    <td class="metric-r2">-</td>
+                                    <td><span class="eval-badge badge-neutral">Baseline</span></td>
+                                </tr>
+                                <tr id="metric-row-rf">
+                                    <td class="model-name-cell"><span class="dot rf-dot"></span> Random Forest</td>
+                                    <td class="metric-rmse">-</td>
+                                    <td class="metric-mae">-</td>
+                                    <td class="metric-r2">-</td>
+                                    <td><span class="eval-badge badge-neutral">-</span></td>
+                                </tr>
+                                <tr id="metric-row-lstm">
+                                    <td class="model-name-cell"><span class="dot lstm-dot"></span> LSTM Neural Net</td>
+                                    <td class="metric-rmse">-</td>
+                                    <td class="metric-mae">-</td>
+                                    <td class="metric-r2">-</td>
+                                    <td><span class="eval-badge badge-neutral">-</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="best-model-recommendation" id="best-model-verdict">
+                        <div class="verdict-icon"><i class="fa-solid fa-circle-check"></i></div>
+                        <div class="verdict-text">
+                            <h4>Recommended Model</h4>
+                            <p>Loading recommendations...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Column 2: 10-day Forecast Price List -->
+                <div class="details-card glass-card">
+                    <div class="card-header">
+                        <h3><i class="fa-regular fa-calendar-days"></i> 10-Day Future Forecasts</h3>
+                    </div>
+                    <div class="table-container forecast-table-container">
+                        <table class="data-table" id="forecast-table">
+                            <thead>
+                                <tr>
+                                    <th>Day / Date</th>
+                                    <th class="lr-forecast-header">Linear Regression</th>
+                                    <th class="rf-forecast-header">Random Forest</th>
+                                    <th class="lstm-forecast-header">LSTM Deep Learning</th>
+                                </tr>
+                            </thead>
+                            <tbody id="forecast-table-body">
+                                <tr>
+                                    <td colspan="4" class="text-center">Search for a ticker to generate predictions.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+        
+        <!-- Footer -->
+        <footer class="app-footer-bar">
+            <p>&copy; 2026 Predictify ML. All rights reserved. Created for Minor Academic Project. Disclaimer: Predictions are for educational purposes and should not be used as financial advice.</p>
+        </footer>
+    </div>
+
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
