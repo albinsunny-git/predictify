@@ -13,8 +13,887 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- ApexCharts CDN -->
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-    <!-- Custom Style Sheet -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Custom Style Sheet (Embedded) -->
+    <style>
+/* Predictify ML: Core Design System & Styling */
+
+:root {
+    --bg-dark: #0a0e1a;
+    --bg-card: rgba(16, 22, 38, 0.6);
+    --border-light: rgba(255, 255, 255, 0.08);
+    --border-focus: rgba(124, 58, 237, 0.5);
+    
+    /* Neon glow color palette */
+    --primary: #7c3aed;
+    --primary-glow: rgba(124, 58, 237, 0.3);
+    --primary-light: #9f67ff;
+    
+    --success: #10b981;
+    --success-glow: rgba(16, 217, 129, 0.2);
+    --danger: #f43f5e;
+    --danger-glow: rgba(244, 63, 94, 0.2);
+    --warning: #f59e0b;
+    --warning-glow: rgba(245, 158, 11, 0.2);
+    
+    --text-main: #f3f4f6;
+    --text-muted: #9ca3af;
+    --text-dim: #6b7280;
+    
+    /* Model color associations for legend sync */
+    --color-lr: #3b82f6; /* Blue */
+    --color-rf: #10b981; /* Green */
+    --color-lstm: #ec4899; /* Pink */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* Background gradient blur blobs */
+.glow-bg-1 {
+    position: absolute;
+    top: -10%;
+    left: -10%;
+    width: 50vw;
+    height: 50vw;
+    background: radial-gradient(circle, rgba(124, 58, 237, 0.12) 0%, rgba(0, 0, 0, 0) 70%);
+    border-radius: 50%;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.glow-bg-2 {
+    position: absolute;
+    bottom: -10%;
+    right: -10%;
+    width: 60vw;
+    height: 60vw;
+    background: radial-gradient(circle, rgba(236, 72, 153, 0.08) 0%, rgba(0, 0, 0, 0) 70%);
+    border-radius: 50%;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.app-container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    min-height: 100vh;
+}
+
+/* Header Section */
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--border-light);
+    padding-bottom: 1.5rem;
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.logo-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 15px var(--primary-glow);
+}
+
+.logo-icon i {
+    font-size: 24px;
+    color: white;
+}
+
+.logo-text h1 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.logo-text h1 span {
+    background: linear-gradient(to right, var(--primary-light), #ec4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.logo-text p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* Search container styles */
+.search-container {
+    flex-grow: 1;
+    max-width: 500px;
+}
+
+.search-form {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.search-input-wrapper {
+    position: relative;
+    flex-grow: 1;
+}
+
+.search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-dim);
+}
+
+.search-form input {
+    width: 100%;
+    padding: 0.8rem 1rem 0.8rem 2.8rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    color: white;
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: all 0.3s ease;
+}
+
+.search-form input:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 10px var(--primary-glow);
+}
+
+.search-form button {
+    padding: 0.8rem 1.8rem;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px var(--primary-glow);
+}
+
+.search-form button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px var(--primary-glow);
+}
+
+.search-form button:active {
+    transform: translateY(0);
+}
+
+/* Quick Select Tickers */
+.quick-tickers-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.quick-tickers-section label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.quick-tickers-list {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.ticker-pill {
+    padding: 0.45rem 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-light);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.ticker-pill:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--text-muted);
+    transform: scale(1.05);
+}
+
+.ticker-pill.active {
+    background: var(--primary-glow);
+    border-color: var(--primary);
+    color: white;
+    box-shadow: 0 0 10px rgba(124, 58, 237, 0.2);
+}
+
+/* Glassmorphism Card Style */
+.glass-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Stats Cards Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.25rem;
+}
+
+.stat-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 120px;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.card-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.card-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+}
+
+.price-icon { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+.signal-icon { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+.rsi-icon { background: rgba(236, 72, 153, 0.15); color: #ec4899; }
+.macd-icon { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+
+.stat-value {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.stat-change {
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.stat-change.up { color: var(--success); }
+.stat-change.down { color: var(--danger); }
+.stat-change.flat { color: var(--text-muted); }
+
+.stat-desc {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* Signal styling states */
+.signal-value.buy { color: var(--success); text-shadow: 0 0 10px var(--success-glow); }
+.signal-value.sell { color: var(--danger); text-shadow: 0 0 10px var(--danger-glow); }
+.signal-value.hold { color: var(--warning); text-shadow: 0 0 10px var(--warning-glow); }
+
+/* Progress bar for RSI */
+.progress-bar-container {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 3px;
+    margin: 0.5rem 0;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(to right, var(--primary), var(--primary-light));
+    border-radius: 3px;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Chart section */
+.chart-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.chart-title-group h3 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.chart-subtitle {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* Chart Control Switches */
+.chart-controls {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 0.6rem 1rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-light);
+}
+
+.toggle-group-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.toggle-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.toggle-switch {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    cursor: pointer;
+    user-select: none;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.toggle-switch input {
+    display: none;
+}
+
+.slider {
+    position: relative;
+    width: 28px;
+    height: 16px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    transition: .3s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 12px;
+    width: 12px;
+    left: 2px;
+    bottom: 2px;
+    background-color: var(--text-muted);
+    border-radius: 50%;
+    transition: .3s;
+}
+
+.toggle-switch input:checked + .slider {
+    background-color: var(--primary);
+}
+
+.toggle-switch input:checked + .slider:before {
+    transform: translateX(12px);
+    background-color: white;
+}
+
+/* Special borders for Model switches to visually coordinate with lines */
+.model-switch.lr-switch input:checked + .slider { background-color: var(--color-lr); }
+.model-switch.rf-switch input:checked + .slider { background-color: var(--color-rf); }
+.model-switch.lstm-switch input:checked + .slider { background-color: var(--color-lstm); }
+
+.toggle-switch:hover .label-text {
+    color: var(--text-main);
+}
+
+.chart-wrapper {
+    width: 100%;
+    height: 450px;
+    position: relative;
+}
+
+/* Details Section Grid */
+.details-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 1.5rem;
+}
+
+@media (max-width: 1024px) {
+    .details-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.details-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.details-card h3 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.details-card h3 i {
+    color: var(--primary-light);
+}
+
+/* Table Design */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 12px;
+    border: 1px solid var(--border-light);
+}
+
+.forecast-table-container {
+    max-height: 350px;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    text-align: left;
+}
+
+.data-table th, .data-table td {
+    padding: 0.9rem 1.2rem;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.data-table th {
+    font-weight: 600;
+    color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.02);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    backdrop-filter: blur(10px);
+}
+
+.data-table th i {
+    cursor: help;
+    font-size: 0.75rem;
+}
+
+.data-table tbody tr {
+    transition: background 0.2s ease;
+}
+
+.data-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.data-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.model-name-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-weight: 600;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.lr-dot { background-color: var(--color-lr); box-shadow: 0 0 6px var(--color-lr); }
+.rf-dot { background-color: var(--color-rf); box-shadow: 0 0 6px var(--color-rf); }
+.lstm-dot { background-color: var(--color-lstm); box-shadow: 0 0 6px var(--color-lstm); }
+
+.eval-badge {
+    padding: 0.25rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.badge-neutral { background: rgba(255, 255, 255, 0.08); color: var(--text-muted); }
+.badge-success { background: var(--success-glow); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
+
+.price-text-up {
+    color: var(--success);
+    font-weight: 600;
+}
+
+.price-text-down {
+    color: var(--danger);
+    font-weight: 600;
+}
+
+.text-center {
+    text-align: center;
+    color: var(--text-muted);
+}
+
+/* Verdict Box */
+.best-model-recommendation {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    background: var(--success-glow);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    border-radius: 12px;
+    padding: 1rem;
+}
+
+.verdict-icon {
+    font-size: 1.8rem;
+    color: var(--success);
+}
+
+.verdict-text h4 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: white;
+}
+
+.verdict-text p {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 0.15rem;
+}
+
+/* Loader Animation */
+.dashboard-loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    gap: 1.5rem;
+    background: var(--bg-card);
+    border-radius: 16px;
+    border: 1px solid var(--border-light);
+    backdrop-filter: blur(16px);
+}
+
+.spinner {
+    width: 60px;
+    height: 60px;
+    position: relative;
+    margin: 0 auto;
+}
+
+.double-bounce1, .double-bounce2 {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: var(--primary-light);
+    opacity: 0.6;
+    position: absolute;
+    top: 0;
+    left: 0;
+    animation: bounce 2.0s infinite ease-in-out;
+}
+
+.double-bounce2 {
+    animation-delay: -1.0s;
+    background-color: #ec4899;
+}
+
+@keyframes bounce {
+    0%, 100% { 
+        transform: scale(0.0);
+    } 50% { 
+        transform: scale(1.0);
+    }
+}
+
+/* Footer style */
+.app-footer-bar {
+    border-top: 1px solid var(--border-light);
+    padding: 1.5rem 0;
+    text-align: center;
+}
+
+.app-footer-bar p {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+}
+
+/* Skeleton animation for initial ticker load */
+.ticker-skeleton-pill {
+    width: 80px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 20px;
+    border: 1px solid var(--border-light);
+    animation: pulse-skele 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse-skele {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.8; }
+}
+
+/* Responsive adjustment */
+@media (max-width: 768px) {
+    .app-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .search-container {
+        max-width: 100%;
+    }
+    
+    .chart-header {
+        flex-direction: column;
+    }
+    
+    .chart-controls {
+        width: 100%;
+        justify-content: flex-start;
+    }
+    
+    .chart-wrapper {
+        height: 320px;
+    }
+}
+
+/* Theme Toggle Button */
+.theme-toggle-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    color: var(--text-main);
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.theme-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: var(--primary);
+    transform: scale(1.05);
+    box-shadow: 0 0 10px var(--primary-glow);
+}
+
+.theme-toggle-btn:active {
+    transform: scale(0.95);
+}
+
+/* Light Theme Variable Overrides */
+body.light-mode {
+    --bg-dark: #f3f4f6;
+    --bg-card: rgba(255, 255, 255, 0.75);
+    --border-light: rgba(0, 0, 0, 0.08);
+    --border-focus: rgba(124, 58, 237, 0.4);
+    
+    --text-main: #1f2937;
+    --text-muted: #4b5563;
+    --text-dim: #9ca3af;
+    
+    --primary-glow: rgba(124, 58, 237, 0.12);
+    --success-glow: rgba(16, 185, 129, 0.12);
+    --danger-glow: rgba(244, 63, 94, 0.12);
+    --warning-glow: rgba(245, 158, 11, 0.12);
+}
+
+/* Light Theme Specific Components Override */
+body.light-mode .glass-card {
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.06);
+    background: var(--bg-card);
+}
+
+body.light-mode .glass-card:hover {
+    box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.1);
+    border-color: rgba(0, 0, 0, 0.15);
+}
+
+body.light-mode .search-form input {
+    background: rgba(255, 255, 255, 0.9);
+    color: #1f2937;
+    border-color: rgba(0, 0, 0, 0.12);
+}
+
+body.light-mode .search-form input:focus {
+    background: white;
+    border-color: var(--primary);
+    box-shadow: 0 0 10px var(--primary-glow);
+}
+
+body.light-mode .theme-toggle-btn {
+    background: rgba(0, 0, 0, 0.03);
+    color: #1f2937;
+    border-color: rgba(0, 0, 0, 0.12);
+}
+
+body.light-mode .theme-toggle-btn:hover {
+    background: rgba(0, 0, 0, 0.06);
+    border-color: var(--primary);
+}
+
+body.light-mode .chart-controls {
+    background: rgba(255, 255, 255, 0.5);
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .table-container {
+    background: rgba(255, 255, 255, 0.5);
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .data-table th {
+    background: rgba(243, 244, 246, 0.9);
+    color: #4b5563;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .data-table td {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+body.light-mode .data-table tbody tr:hover {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+body.light-mode .ticker-pill {
+    background: rgba(0, 0, 0, 0.03);
+    color: #4b5563;
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .ticker-pill:hover {
+    background: rgba(0, 0, 0, 0.06);
+    color: #1f2937;
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+body.light-mode .ticker-pill.active {
+    background: var(--primary-glow);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+body.light-mode .slider {
+    background-color: rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .slider:before {
+    background-color: #9ca3af;
+}
+
+body.light-mode .toggle-switch input:checked + .slider:before {
+    background-color: white;
+}
+
+body.light-mode .glow-bg-1 {
+    background: radial-gradient(circle, rgba(124, 58, 237, 0.05) 0%, rgba(0, 0, 0, 0) 70%);
+}
+
+body.light-mode .glow-bg-2 {
+    background: radial-gradient(circle, rgba(236, 72, 153, 0.03) 0%, rgba(0, 0, 0, 0) 70%);
+}
+
+body.light-mode .dashboard-loader {
+    background: var(--bg-card);
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .verdict-text h4 {
+    color: #065f46;
+}
+
+body.light-mode .logo-text h1 {
+    color: #111827;
+}
+
+body.light-mode .logo-text h1 span {
+    background: linear-gradient(to right, var(--primary), #ec4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+    </style>
 </head>
 <body>
     <!-- Background glow elements for futuristic aesthetic -->
@@ -286,7 +1165,771 @@
         </footer>
     </div>
 
-    <!-- Custom JavaScript -->
-    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <!-- Custom JavaScript (Embedded) -->
+    <script>
+// Predictify ML: Frontend Core Logic & Charting
+
+document.addEventListener("DOMContentLoaded", () => {
+    // UI Elements
+    const searchForm = document.getElementById("search-form");
+    const tickerInput = document.getElementById("ticker-input");
+    const searchBtn = document.getElementById("search-btn");
+    const loadingIcon = searchBtn.querySelector(".loading-icon");
+    const searchBtnText = searchBtn.querySelector("span");
+    const quickTickersList = document.getElementById("quick-tickers-list");
+    const dashboardLoader = document.getElementById("dashboard-loader");
+    const dashboardContent = document.getElementById("dashboard-content");
+
+    // Stat Cards
+    const stockPriceEl = document.getElementById("stock-price");
+    const stockChangeEl = document.getElementById("stock-change");
+    const signalBadgeEl = document.getElementById("signal-badge");
+    const signalReasonEl = document.getElementById("signal-reason");
+    const rsiValueEl = document.getElementById("rsi-value");
+    const rsiProgressEl = document.getElementById("rsi-progress");
+    const rsiStatusEl = document.getElementById("rsi-status");
+    const macdStatusEl = document.getElementById("macd-status");
+    const macdValueEl = document.getElementById("macd-value");
+
+    // Overlays & Models checkboxes
+    const toggles = {
+        sma20: document.getElementById("toggle-sma20"),
+        sma50: document.getElementById("toggle-sma50"),
+        ema20: document.getElementById("toggle-ema20"),
+        bb: document.getElementById("toggle-bb"),
+        lr: document.getElementById("toggle-lr"),
+        rf: document.getElementById("toggle-rf"),
+        lstm: document.getElementById("toggle-lstm"),
+        chartType: document.getElementById("toggle-chart-type")
+    };
+
+    // Theme Switcher Logic
+    const themeToggleBtn = document.getElementById("theme-toggle-btn");
+    const themeIcon = themeToggleBtn.querySelector("i");
+    
+    // Check local storage for theme
+    const savedTheme = localStorage.getItem("theme") || "dark";
+    if (savedTheme === "light") {
+        document.body.classList.add("light-mode");
+        themeIcon.className = "fa-solid fa-sun";
+    } else {
+        document.body.classList.remove("light-mode");
+        themeIcon.className = "fa-solid fa-moon";
+    }
+
+    themeToggleBtn.addEventListener("click", () => {
+        if (document.body.classList.contains("light-mode")) {
+            document.body.classList.remove("light-mode");
+            themeIcon.className = "fa-solid fa-moon";
+            localStorage.setItem("theme", "dark");
+        } else {
+            document.body.classList.add("light-mode");
+            themeIcon.className = "fa-solid fa-sun";
+            localStorage.setItem("theme", "light");
+        }
+        // If chart exists, re-render it with new theme colors
+        if (mainChart && currentStockData) {
+            renderChart(currentStockData);
+        }
+    });
+
+    // Table bodies
+    const forecastTableBody = document.getElementById("forecast-table-body");
+    
+    // Chart Globals
+    let mainChart = null;
+    let currentStockData = null; // Cache for current ticker responses
+
+    // 1. Fetch and render popular tickers list on startup
+    fetchPopularTickers();
+
+    // 2. Initial analysis of AAPL as default
+    loadTickerData("AAPL");
+
+    // 3. Search Form Submit handler
+    searchForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const symbol = tickerInput.value.trim().toUpperCase();
+        if (symbol) {
+            loadTickerData(symbol);
+        }
+    });
+
+    // 4. Set up toggles behavior
+    Object.keys(toggles).forEach(key => {
+        toggles[key].addEventListener("change", () => {
+            if (mainChart) {
+                updateChartDatasetVisibility();
+            }
+        });
+    });
+
+    // Fetch popular tickers config
+    async function fetchPopularTickers() {
+        try {
+            const response = await fetch("/api/tickers");
+            const tickers = await response.json();
+            
+            quickTickersList.innerHTML = "";
+            tickers.forEach(t => {
+                const pill = document.createElement("button");
+                pill.className = "ticker-pill";
+                pill.textContent = t.symbol;
+                pill.title = t.name;
+                pill.addEventListener("click", () => {
+                    tickerInput.value = t.symbol;
+                    loadTickerData(t.symbol);
+                });
+                quickTickersList.appendChild(pill);
+            });
+        } catch (err) {
+            console.error("Failed to load popular tickers", err);
+        }
+    }
+
+    // Call API and handle UI state transitions
+    async function loadTickerData(ticker) {
+        // Toggle loader UI
+        showLoader(true);
+        setActiveTickerPill(ticker);
+
+        try {
+            const response = await fetch(`/api/predict?ticker=${ticker}`);
+            const payload = await response.json();
+
+            if (payload.status === "success") {
+                currentStockData = payload.data;
+                renderDashboard(currentStockData);
+                showLoader(false);
+            } else {
+                alert(`Error: ${payload.message}`);
+                showLoader(false);
+            }
+        } catch (error) {
+            console.error("API error:", error);
+            alert("An error occurred while communicating with the model server.");
+            showLoader(false);
+        }
+    }
+
+    function showLoader(isLoading) {
+        if (isLoading) {
+            dashboardLoader.style.display = "flex";
+            dashboardContent.style.opacity = "0.3";
+            dashboardContent.style.pointerEvents = "none";
+            loadingIcon.style.display = "inline-block";
+            searchBtnText.textContent = "Analyzing";
+            searchBtn.disabled = true;
+        } else {
+            dashboardLoader.style.display = "none";
+            dashboardContent.style.opacity = "1";
+            dashboardContent.style.pointerEvents = "all";
+            loadingIcon.style.display = "none";
+            searchBtnText.textContent = "Analyze";
+            searchBtn.disabled = false;
+        }
+    }
+
+    function setActiveTickerPill(ticker) {
+        const pills = document.querySelectorAll(".ticker-pill");
+        pills.forEach(p => {
+            if (p.textContent === ticker) {
+                p.classList.add("active");
+            } else {
+                p.classList.remove("active");
+            }
+        });
+    }
+
+    // Main layout renderer
+    function renderDashboard(data) {
+        // Set chart title
+        document.getElementById("chart-main-title").textContent = `${data.ticker} Price Forecast Chart`;
+
+        // 1. Render Stats
+        renderStats(data);
+        
+        // 2. Render Chart
+        renderChart(data);
+
+        // 3. Render Metrics Table
+        renderMetrics(data);
+
+        // 4. Render Forecasts Table
+        renderForecastsTable(data);
+    }
+
+    function renderStats(data) {
+        const len = data.close.length;
+        if (len === 0) return;
+
+        const currentPrice = data.close[len - 1];
+        const prevPrice = data.close[len - 2];
+        const change = currentPrice - prevPrice;
+        const changePct = (change / prevPrice) * 100;
+
+        stockPriceEl.textContent = `$${currentPrice.toFixed(2)}`;
+        
+        // Show change
+        if (change >= 0) {
+            stockChangeEl.className = "stat-change up";
+            stockChangeEl.innerHTML = `<i class="fa-solid fa-caret-up"></i> +$${change.toFixed(2)} (+${changePct.toFixed(2)}%)`;
+        } else {
+            stockChangeEl.className = "stat-change down";
+            stockChangeEl.innerHTML = `<i class="fa-solid fa-caret-down"></i> -$${Math.abs(change).toFixed(2)} (-${changePct.toFixed(2)}%)`;
+        }
+
+        // RSI Assessment
+        const rsiArray = data.indicators.rsi;
+        const rsiVal = rsiArray[rsiArray.length - 1];
+        
+        if (rsiVal !== null && rsiVal !== "") {
+            const val = parseFloat(rsiVal);
+            rsiValueEl.textContent = val.toFixed(1);
+            rsiProgressEl.style.width = `${val}%`;
+
+            if (val >= 70) {
+                rsiStatusEl.className = "stat-desc price-text-down";
+                rsiStatusEl.textContent = "Overbought (Bearish)";
+            } else if (val <= 30) {
+                rsiStatusEl.className = "stat-desc price-text-up";
+                rsiStatusEl.textContent = "Oversold (Bullish)";
+            } else {
+                rsiStatusEl.className = "stat-desc";
+                rsiStatusEl.textContent = "Neutral";
+            }
+        } else {
+            rsiValueEl.textContent = "N/A";
+            rsiProgressEl.style.width = "0%";
+            rsiStatusEl.textContent = "Insufficient Data";
+        }
+
+        // MACD Crossover Assessment
+        const macdArr = data.indicators.macd;
+        const macdSigArr = data.indicators.macd_signal;
+        const macdVal = macdArr[macdArr.length - 1];
+        const macdSigVal = macdSigArr[macdSigArr.length - 1];
+
+        if (macdVal !== "" && macdSigVal !== "") {
+            const mVal = parseFloat(macdVal);
+            const sVal = parseFloat(macdSigVal);
+            
+            macdValueEl.textContent = `MACD: ${mVal.toFixed(3)} | Signal: ${sVal.toFixed(3)}`;
+            
+            if (mVal > sVal) {
+                macdStatusEl.className = "stat-value price-text-up";
+                macdStatusEl.textContent = "Bullish";
+            } else {
+                macdStatusEl.className = "stat-value price-text-down";
+                macdStatusEl.textContent = "Bearish";
+            }
+        } else {
+            macdStatusEl.className = "stat-value";
+            macdStatusEl.textContent = "N/A";
+            macdValueEl.textContent = "Insufficient Data";
+        }
+
+        // Dynamic Signal Recommendation System
+        calculateTradingSignal(data, currentPrice);
+    }
+
+    function calculateTradingSignal(data, currentPrice) {
+        let bullishPoints = 0;
+        let bearishPoints = 0;
+        let reasons = [];
+
+        // 1. RSI Rule
+        const rsiVal = parseFloat(data.indicators.rsi[data.indicators.rsi.length - 1]);
+        if (!isNaN(rsiVal)) {
+            if (rsiVal <= 35) {
+                bullishPoints += 1.5;
+                reasons.push("RSI oversold indicates turning point");
+            } else if (rsiVal >= 65) {
+                bearishPoints += 1.5;
+                reasons.push("RSI overbought signals correction risk");
+            }
+        }
+
+        // 2. MACD Crossover Rule
+        const macd = parseFloat(data.indicators.macd[data.indicators.macd.length - 1]);
+        const signal = parseFloat(data.indicators.macd_signal[data.indicators.macd_signal.length - 1]);
+        if (!isNaN(macd) && !isNaN(signal)) {
+            if (macd > signal) {
+                bullishPoints += 1.0;
+                reasons.push("MACD bullish crossover");
+            } else {
+                bearishPoints += 1.0;
+                reasons.push("MACD bearish crossover");
+            }
+        }
+
+        // 3. Price vs MA Rules
+        const sma20 = parseFloat(data.indicators.sma_20[data.indicators.sma_20.length - 1]);
+        if (!isNaN(sma20)) {
+            if (currentPrice > sma20) {
+                bullishPoints += 0.8;
+                reasons.push("Price above 20-day SMA");
+            } else {
+                bearishPoints += 0.8;
+                reasons.push("Price below 20-day SMA");
+            }
+        }
+
+        const ema20 = parseFloat(data.indicators.ema_20[data.indicators.ema_20.length - 1]);
+        if (!isNaN(ema20)) {
+            if (currentPrice > ema20) {
+                bullishPoints += 0.7;
+            } else {
+                bearishPoints += 0.7;
+            }
+        }
+
+        // Compile verdict
+        const netScore = bullishPoints - bearishPoints;
+        let signalClass = "";
+        let signalText = "";
+        
+        if (netScore >= 1.0) {
+            signalText = "BUY";
+            signalClass = "buy";
+        } else if (netScore <= -1.0) {
+            signalText = "SELL";
+            signalClass = "sell";
+        } else {
+            signalText = "HOLD";
+            signalClass = "hold";
+        }
+
+        signalBadgeEl.textContent = signalText;
+        signalBadgeEl.className = `stat-value signal-value ${signalClass}`;
+        
+        if (reasons.length > 0) {
+            signalReasonEl.textContent = reasons.slice(0, 2).join(" & ");
+        } else {
+            signalReasonEl.textContent = "Indicators are in alignment";
+        }
+    }
+
+    // ApexCharts implementation
+    function renderChart(data) {
+        const histLen = data.dates.length;
+        const lastHistClose = data.close[histLen - 1];
+        const isCandle = toggles.chartType.checked;
+        const isLightMode = document.body.classList.contains("light-mode");
+
+        // 1. Historical series
+        let historicalSeriesData = [];
+        for (let i = 0; i < histLen; i++) {
+            if (isCandle) {
+                historicalSeriesData.push({
+                    x: data.dates[i],
+                    y: [
+                        parseFloat(data.open[i]),
+                        parseFloat(data.high[i]),
+                        parseFloat(data.low[i]),
+                        parseFloat(data.close[i])
+                    ]
+                });
+            } else {
+                historicalSeriesData.push({
+                    x: data.dates[i],
+                    y: parseFloat(data.close[i])
+                });
+            }
+        }
+
+        // 2. Overlays helper
+        function buildOverlayData(indicatorList) {
+            let list = [];
+            for (let i = 0; i < histLen; i++) {
+                const val = indicatorList[i];
+                if (val !== null && val !== "") {
+                    list.push({ x: data.dates[i], y: parseFloat(val) });
+                }
+            }
+            return list;
+        }
+
+        // 3. Fitted helper
+        function buildFittedData(fittedList) {
+            let list = [];
+            for (let i = 0; i < histLen; i++) {
+                const val = fittedList[i];
+                if (val !== null && val !== undefined) {
+                    list.push({ x: data.dates[i], y: parseFloat(val) });
+                }
+            }
+            return list;
+        }
+
+        // 4. Forecast helper
+        function buildForecastData(forecastList) {
+            let list = [{ x: data.dates[histLen - 1], y: lastHistClose }];
+            for (let i = 0; i < forecastList.length; i++) {
+                list.push({ x: data.forecast.dates[i], y: parseFloat(forecastList[i]) });
+            }
+            return list;
+        }
+
+        const series = [];
+
+        // Historical Close is always visible
+        series.push({
+            name: 'Historical Close',
+            type: isCandle ? 'candlestick' : 'area',
+            data: historicalSeriesData
+        });
+
+        // Add indicator overlays if checked
+        if (toggles.sma20.checked) {
+            series.push({
+                name: 'SMA 20',
+                type: 'line',
+                data: buildOverlayData(data.indicators.sma_20)
+            });
+        }
+        if (toggles.sma50.checked) {
+            series.push({
+                name: 'SMA 50',
+                type: 'line',
+                data: buildOverlayData(data.indicators.sma_50)
+            });
+        }
+        if (toggles.ema20.checked) {
+            series.push({
+                name: 'EMA 20',
+                type: 'line',
+                data: buildOverlayData(data.indicators.ema_20)
+            });
+        }
+        if (toggles.bb.checked) {
+            series.push({
+                name: 'BB Upper',
+                type: 'line',
+                data: buildOverlayData(data.indicators.bb_upper)
+            });
+            series.push({
+                name: 'BB Lower',
+                type: 'line',
+                data: buildOverlayData(data.indicators.bb_lower)
+            });
+        }
+
+        // Add fitted lines if checked
+        if (toggles.lr.checked) {
+            series.push({
+                name: 'Lin Reg (Fitted)',
+                type: 'line',
+                data: buildFittedData(data.fitted.lr)
+            });
+            series.push({
+                name: 'Lin Reg Forecast',
+                type: 'line',
+                data: buildForecastData(data.forecast.lr)
+            });
+        }
+        if (toggles.rf.checked) {
+            series.push({
+                name: 'Random Forest (Fitted)',
+                type: 'line',
+                data: buildFittedData(data.fitted.rf)
+            });
+            series.push({
+                name: 'Random Forest Forecast',
+                type: 'line',
+                data: buildForecastData(data.forecast.rf)
+            });
+        }
+        if (toggles.lstm.checked) {
+            series.push({
+                name: 'LSTM (Fitted)',
+                type: 'line',
+                data: buildFittedData(data.fitted.lstm)
+            });
+            series.push({
+                name: 'LSTM Forecast',
+                type: 'line',
+                data: buildForecastData(data.forecast.lstm)
+            });
+        }
+
+        const options = {
+            chart: {
+                height: '100%',
+                type: 'line',
+                fontFamily: 'Inter, sans-serif',
+                toolbar: {
+                    show: true,
+                    tools: {
+                        download: true,
+                        selection: true,
+                        zoom: true,
+                        zoomin: true,
+                        zoomout: true,
+                        pan: true,
+                        reset: true
+                    }
+                },
+                background: 'transparent',
+                animations: {
+                    enabled: true,
+                    easing: 'easeinout',
+                    speed: 800,
+                    animateGradually: {
+                        enabled: true,
+                        delay: 150
+                    },
+                    dynamicAnimation: {
+                        enabled: true,
+                        speed: 350
+                    }
+                }
+            },
+            theme: {
+                mode: isLightMode ? 'light' : 'dark'
+            },
+            series: series,
+            stroke: {
+                width: series.map(s => {
+                    if (s.name === 'Historical Close') return isCandle ? 1.5 : 2.5;
+                    if (s.name.includes('Forecast')) return 2;
+                    if (s.name.includes('Fitted')) return 1.2;
+                    return 1.5; // Indicators
+                }),
+                dashArray: series.map(s => {
+                    if (s.name === 'SMA 20') return 3;
+                    if (s.name === 'SMA 50') return 5;
+                    if (s.name === 'BB Upper' || s.name === 'BB Lower') return 4;
+                    if (s.name.includes('Forecast')) return 5;
+                    return 0;
+                })
+            },
+            colors: series.map(s => {
+                if (s.name === 'Historical Close') return '#a78bfa';
+                if (s.name === 'SMA 20') return '#eab308';
+                if (s.name === 'SMA 50') return '#f97316';
+                if (s.name === 'EMA 20') return '#06b6d4';
+                if (s.name === 'BB Upper' || s.name === 'BB Lower') return isLightMode ? 'rgba(0, 0, 0, 0.25)' : 'rgba(255, 255, 255, 0.25)';
+                if (s.name.includes('Lin Reg')) return '#3b82f6';
+                if (s.name.includes('Random Forest')) return '#10b981';
+                if (s.name.includes('LSTM')) return '#ec4899';
+                return '#a78bfa';
+            }),
+            plotOptions: {
+                candlestick: {
+                    colors: {
+                        upward: '#089981',   // Bullish green
+                        downward: '#f23645'  // Bearish red
+                    },
+                    wick: {
+                        useFillColor: true
+                    }
+                }
+            },
+            fill: {
+                type: series.map(s => s.name === 'Historical Close' && !isCandle ? 'gradient' : 'solid'),
+                gradient: {
+                    shade: isLightMode ? 'light' : 'dark',
+                    type: 'vertical',
+                    shadeIntensity: 0.5,
+                    inverseColors: false,
+                    opacityFrom: 0.4,
+                    opacityTo: 0.05,
+                    stops: [0, 90, 100]
+                }
+            },
+            markers: {
+                size: series.map(s => s.name.includes('Forecast') ? 4 : 0),
+                strokeWidth: 0,
+                hover: {
+                    size: 6
+                }
+            },
+            grid: {
+                borderColor: isLightMode ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.05)',
+                xaxis: {
+                    lines: {
+                        show: true
+                    }
+                },
+                yaxis: {
+                    lines: {
+                        show: true
+                    }
+                }
+            },
+            xaxis: {
+                type: 'category',
+                labels: {
+                    style: {
+                        colors: isLightMode ? '#4b5563' : '#9ca3af',
+                        fontFamily: 'Inter',
+                        fontSize: '10px'
+                    },
+                    maxTicksLimit: 12,
+                    formatter: function(val) {
+                        if (!val) return '';
+                        const parts = val.split('-');
+                        if (parts.length === 3) {
+                            return `${parts[1]}/${parts[0].substring(2)}`;
+                        }
+                        return val;
+                    }
+                },
+                axisBorder: { show: false },
+                axisTicks: { show: false }
+            },
+            yaxis: {
+                labels: {
+                    style: {
+                        colors: isLightMode ? '#4b5563' : '#9ca3af',
+                        fontFamily: 'Inter',
+                        fontSize: '11px'
+                    },
+                    formatter: function(value) {
+                        return '$' + value.toFixed(2);
+                    }
+                }
+            },
+            tooltip: {
+                theme: isLightMode ? 'light' : 'dark',
+                shared: true,
+                intersect: false,
+                x: {
+                    show: true
+                },
+                y: {
+                    formatter: function (val) {
+                        if (val === undefined || val === null) return '';
+                        if (Array.isArray(val)) {
+                            return `<br/>O: $${val[0].toFixed(2)}<br/>H: $${val[1].toFixed(2)}<br/>L: $${val[2].toFixed(2)}<br/>C: $${val[3].toFixed(2)}`;
+                        }
+                        return '$' + val.toFixed(2);
+                    }
+                }
+            },
+            legend: {
+                show: true,
+                position: 'top',
+                horizontalAlign: 'center',
+                labels: {
+                    colors: isLightMode ? '#1f2937' : '#f3f4f6'
+                },
+                itemMargin: {
+                    horizontal: 10,
+                    vertical: 5
+                }
+            }
+        };
+
+        if (mainChart) {
+            mainChart.destroy();
+        }
+        mainChart = new ApexCharts(document.getElementById('mainChart'), options);
+        mainChart.render();
+    }
+
+    function updateChartDatasetVisibility() {
+        if (mainChart && currentStockData) {
+            renderChart(currentStockData);
+        }
+    }
+
+    // Render comparison metrics table
+    function renderMetrics(data) {
+        const models = ['lr', 'rf', 'lstm'];
+        
+        let bestModel = 'lr';
+        let bestR2 = -999;
+        
+        models.forEach(m => {
+            const container = document.getElementById(`metric-row-${m}`);
+            const metrics = data.metrics[m];
+            
+            container.querySelector(".metric-rmse").textContent = `$${metrics.rmse.toFixed(2)}`;
+            container.querySelector(".metric-mae").textContent = `$${metrics.mae.toFixed(2)}`;
+            container.querySelector(".metric-r2").textContent = metrics.r2.toFixed(4);
+
+            if (metrics.r2 > bestR2) {
+                bestR2 = metrics.r2;
+                bestModel = m;
+            }
+        });
+
+        // Set evaluation badges
+        models.forEach(m => {
+            const container = document.getElementById(`metric-row-${m}`);
+            const badge = container.querySelector(".eval-badge");
+            if (m === bestModel) {
+                badge.className = "eval-badge badge-success";
+                badge.textContent = "Top Performer";
+            } else if (m === 'lr') {
+                badge.className = "eval-badge badge-neutral";
+                badge.textContent = "Baseline";
+            } else {
+                badge.className = "eval-badge badge-neutral";
+                badge.textContent = "Alternative";
+            }
+        });
+
+        // Render recommendation box
+        const verdictBox = document.getElementById("best-model-verdict");
+        const verdictTextP = verdictBox.querySelector(".verdict-text p");
+        
+        let modelNiceName = "";
+        let details = "";
+        
+        if (bestModel === 'lr') {
+            modelNiceName = "Linear Regression";
+            details = `This baseline model shows the highest correlation coefficient (R2: ${bestR2.toFixed(4)}) on test data, suggesting stable trend continuation.`;
+        } else if (bestModel === 'rf') {
+            modelNiceName = "Random Forest Regressor";
+            details = `The ensemble decision tree algorithm performed best (R2: ${bestR2.toFixed(4)}), indicating strong adaptation to non-linear stock fluctuations.`;
+        } else {
+            modelNiceName = "LSTM Neural Network";
+            details = `Deep Learning Long Short-Term Memory network outperformed other models (R2: ${bestR2.toFixed(4)}), demonstrating superior performance in retaining long-term historical context.`;
+        }
+
+        verdictBox.querySelector("h4").innerHTML = `Recommended Model: <span style="color:var(--success);">${modelNiceName}</span>`;
+        verdictTextP.textContent = details;
+    }
+
+    // Render future prediction table lists
+    function renderForecastsTable(data) {
+        forecastTableBody.innerHTML = "";
+        
+        const len = data.forecast.dates.length;
+        for (let i = 0; i < len; i++) {
+            const tr = document.createElement("tr");
+            
+            // Format dates slightly nicer
+            const dateStr = data.forecast.dates[i];
+            
+            // Linear regression forecast change direction
+            const prevLR = i === 0 ? data.close[data.close.length - 1] : data.forecast.lr[i - 1];
+            const currLR = data.forecast.lr[i];
+            const lrClass = currLR >= prevLR ? "price-text-up" : "price-text-down";
+            
+            // Random Forest forecast direction
+            const prevRF = i === 0 ? data.close[data.close.length - 1] : data.forecast.rf[i - 1];
+            const currRF = data.forecast.rf[i];
+            const rfClass = currRF >= prevRF ? "price-text-up" : "price-text-down";
+
+            // LSTM forecast direction
+            const prevLSTM = i === 0 ? data.close[data.close.length - 1] : data.forecast.lstm[i - 1];
+            const currLSTM = data.forecast.lstm[i];
+            const lstmClass = currLSTM >= prevLSTM ? "price-text-up" : "price-text-down";
+
+            tr.innerHTML = `
+                <td style="font-weight: 500;">Day ${i+1} <span style="font-size:0.75rem; color:var(--text-muted); font-weight:400;">(${dateStr})</span></td>
+                <td class="${lrClass}">$${currLR.toFixed(2)}</td>
+                <td class="${rfClass}">$${currRF.toFixed(2)}</td>
+                <td class="${lstmClass}">$${currLSTM.toFixed(2)}</td>
+            `;
+            forecastTableBody.appendChild(tr);
+        }
+    }
+});
+    </script>
 </body>
 </html>
