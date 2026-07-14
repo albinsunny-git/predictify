@@ -1172,7 +1172,7 @@ body.light-mode .logo-text h1 span {
 document.addEventListener("DOMContentLoaded", () => {
     // Configure your backend API server URL here if hosted externally (e.g., https://your-backend.onrender.com)
     // By default, if hosted on static hosting (like Cloudflare Workers), it falls back to your local Flask backend.
-    const BACKEND_URL = "https://16177096b14d46.lhr.life";
+    const BACKEND_URL = "https://witty-dogs-know.loca.lt";
     
     const API_BASE_URL = BACKEND_URL || (
         window.location.hostname.includes("workers.dev") || 
@@ -1280,7 +1280,11 @@ document.addEventListener("DOMContentLoaded", () => {
     // Fetch popular tickers config
     async function fetchPopularTickers() {
         try {
-            const response = await fetch(`${API_BASE_URL}/api/tickers`);
+            const response = await fetch(`${API_BASE_URL}/api/tickers`, {
+                headers: {
+                    "Bypass-Tunnel-Reminder": "true"
+                }
+            });
             const tickers = await response.json();
             
             quickTickersList.innerHTML = "";
@@ -1307,7 +1311,11 @@ document.addEventListener("DOMContentLoaded", () => {
         setActiveTickerPill(ticker);
 
         try {
-            const response = await fetch(`${API_BASE_URL}/api/predict?ticker=${ticker}`);
+            const response = await fetch(`${API_BASE_URL}/api/predict?ticker=${ticker}`, {
+                headers: {
+                    "Bypass-Tunnel-Reminder": "true"
+                }
+            });
             const payload = await response.json();
 
             if (payload.status === "success") {
