@@ -1170,6 +1170,19 @@ body.light-mode .logo-text h1 span {
 // Predictify ML: Frontend Core Logic & Charting
 
 document.addEventListener("DOMContentLoaded", () => {
+    // Configure your backend API server URL here if hosted externally (e.g., https://your-backend.onrender.com)
+    // By default, if hosted on static hosting (like Cloudflare Workers), it falls back to your local Flask backend.
+    const BACKEND_URL = ""; 
+    
+    const API_BASE_URL = BACKEND_URL || (
+        window.location.hostname.includes("workers.dev") || 
+        window.location.hostname.includes("github.io") || 
+        window.location.hostname.includes("vercel.app") ||
+        window.location.protocol === "file:"
+            ? "http://127.0.0.1:5000" 
+            : ""
+    );
+
     // UI Elements
     const searchForm = document.getElementById("search-form");
     const tickerInput = document.getElementById("ticker-input");
@@ -1267,7 +1280,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Fetch popular tickers config
     async function fetchPopularTickers() {
         try {
-            const response = await fetch("/api/tickers");
+            const response = await fetch(`${API_BASE_URL}/api/tickers`);
             const tickers = await response.json();
             
             quickTickersList.innerHTML = "";
@@ -1294,7 +1307,7 @@ document.addEventListener("DOMContentLoaded", () => {
         setActiveTickerPill(ticker);
 
         try {
-            const response = await fetch(`/api/predict?ticker=${ticker}`);
+            const response = await fetch(`${API_BASE_URL}/api/predict?ticker=${ticker}`);
             const payload = await response.json();
 
             if (payload.status === "success") {
