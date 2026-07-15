@@ -893,6 +893,272 @@ body.light-mode .logo-text h1 span {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
+
+/* Settings Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.active {
+    display: flex;
+    opacity: 1;
+}
+
+.modal-content {
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+    overflow: hidden;
+}
+
+.modal-overlay.active .modal-content {
+    transform: scale(1);
+}
+
+.modal-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.modal-header h3 i {
+    color: var(--primary-light);
+}
+
+.modal-close-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.2s ease;
+}
+
+.modal-close-btn:hover {
+    color: var(--danger);
+}
+
+.modal-body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    color: white;
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: all 0.3s ease;
+}
+
+body.light-mode .form-group input {
+    background: rgba(0, 0, 0, 0.02);
+    color: #1f2937;
+    border-color: rgba(0, 0, 0, 0.12);
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 10px var(--primary-glow);
+}
+
+body.light-mode .form-group input:focus {
+    background: white;
+}
+
+.modal-info-box {
+    background: rgba(124, 58, 237, 0.05);
+    border: 1px solid rgba(124, 58, 237, 0.2);
+    border-radius: 10px;
+    padding: 1rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+.modal-info-box code {
+    background: rgba(255, 255, 255, 0.08);
+    padding: 0.1rem 0.3rem;
+    border-radius: 4px;
+    color: var(--text-main);
+    font-family: monospace;
+}
+
+body.light-mode .modal-info-box {
+    background: rgba(124, 58, 237, 0.02);
+    border-color: rgba(124, 58, 237, 0.1);
+}
+
+.connection-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.status-indicator.success {
+    background: var(--success);
+    box-shadow: 0 0 6px var(--success);
+}
+
+.status-indicator.danger {
+    background: var(--danger);
+    box-shadow: 0 0 6px var(--danger);
+}
+
+.modal-footer {
+    padding: 1.25rem 1.5rem;
+    border-top: 1px solid var(--border-light);
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.btn-secondary {
+    padding: 0.7rem 1.2rem;
+    background: transparent;
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    color: var(--text-main);
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--text-muted);
+}
+
+body.light-mode .btn-secondary:hover {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.btn-primary {
+    padding: 0.7rem 1.5rem;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px var(--primary-glow);
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px var(--primary-glow);
+}
+
+/* Connection alert banner */
+.connection-alert-banner {
+    display: none;
+    background: rgba(244, 63, 94, 0.1);
+    border: 1px solid rgba(244, 63, 94, 0.2);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.connection-alert-message {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.9rem;
+    color: var(--text-main);
+}
+
+.connection-alert-message i {
+    color: var(--danger);
+    font-size: 1.2rem;
+}
+
+.connection-alert-action-btn {
+    padding: 0.5rem 1rem;
+    background: var(--danger);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.connection-alert-action-btn:hover {
+    background: #e11d48;
+}
     </style>
 </head>
 <body>
@@ -927,6 +1193,9 @@ body.light-mode .logo-text h1 span {
                     <button type="button" id="theme-toggle-btn" class="theme-toggle-btn" title="Toggle Light/Dark Theme">
                         <i class="fa-solid fa-moon"></i>
                     </button>
+                    <button type="button" id="settings-toggle-btn" class="theme-toggle-btn" title="Configure Backend API Server">
+                        <i class="fa-solid fa-gear"></i>
+                    </button>
                 </form>
             </div>
         </header>
@@ -942,6 +1211,17 @@ body.light-mode .logo-text h1 span {
                 <div class="ticker-skeleton-pill"></div>
             </div>
         </section>
+
+        <!-- Connection Error Alert Banner -->
+        <div id="connection-alert-banner" class="connection-alert-banner">
+            <div class="connection-alert-message">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <div>
+                    <strong>Connection Failed:</strong> Unable to connect to the model server. Expose your local Python server and verify your Backend URL configuration.
+                </div>
+            </div>
+            <button type="button" id="alert-config-btn" class="connection-alert-action-btn">Configure Server</button>
+        </div>
 
         <!-- Main Dashboard Loader -->
         <div id="dashboard-loader" class="dashboard-loader" style="display: none;">
@@ -1165,23 +1445,70 @@ body.light-mode .logo-text h1 span {
         </footer>
     </div>
 
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-gears"></i> Backend Configuration</h3>
+                <button type="button" id="settings-close-btn" class="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="settings-backend-url">Backend Server URL</label>
+                    <input type="text" id="settings-backend-url" placeholder="e.g. https://your-tunnel.loca.lt or http://127.0.0.1:5000">
+                </div>
+                
+                <div class="connection-status">
+                    <span>Connection Status:</span>
+                    <span id="connection-status-dot" class="status-indicator danger"></span>
+                    <span id="connection-status-text">Disconnected</span>
+                </div>
+                
+                <div class="modal-info-box">
+                    <strong>Exposing Local Flask Backend:</strong><br>
+                    The prediction model requires a Python environment to run LSTM neural networks. Expose your local server (port 5000) using one of these commands:<br>
+                    <ol style="margin-left: 1.25rem; margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.25rem;">
+                        <li>Localtunnel: <code>lt --port 5000</code></li>
+                        <li>Localhost.run: <code>ssh -R 80:localhost:5000 nokey@localhost.run</code></li>
+                    </ol>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="settings-test-btn" class="btn-secondary">Test Connection</button>
+                <button type="button" id="settings-save-btn" class="btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Custom JavaScript (Embedded) -->
     <script>
 // Predictify ML: Frontend Core Logic & Charting
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Configure your backend API server URL here if hosted externally (e.g., https://your-backend.onrender.com)
-    // By default, if hosted on static hosting (like Cloudflare Workers), it falls back to your local Flask backend.
-    const BACKEND_URL = "https://witty-dogs-know.loca.lt";
+    // Default fallback backend URL
+    const DEFAULT_BACKEND_URL = "https://witty-dogs-know.loca.lt";
     
-    const API_BASE_URL = BACKEND_URL || (
-        window.location.hostname.includes("workers.dev") || 
-        window.location.hostname.includes("github.io") || 
-        window.location.hostname.includes("vercel.app") ||
-        window.location.protocol === "file:"
-            ? "http://127.0.0.1:5000" 
-            : ""
-    );
+    // Read from localStorage or fallback
+    let savedBackendUrl = localStorage.getItem("predictify_backend_url");
+    if (savedBackendUrl === null) {
+        savedBackendUrl = DEFAULT_BACKEND_URL;
+        localStorage.setItem("predictify_backend_url", savedBackendUrl);
+    }
+    
+    function getApiBaseUrl() {
+        const url = localStorage.getItem("predictify_backend_url");
+        if (url !== null && url.trim() !== "") {
+            return url.trim();
+        }
+        return window.location.hostname.includes("workers.dev") || 
+               window.location.hostname.includes("github.io") || 
+               window.location.hostname.includes("vercel.app") ||
+               window.location.protocol === "file:"
+                   ? "http://127.0.0.1:5000" 
+                   : "";
+    }
+    
+    let API_BASE_URL = getApiBaseUrl();
 
     // UI Elements
     const searchForm = document.getElementById("search-form");
@@ -1192,6 +1519,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const quickTickersList = document.getElementById("quick-tickers-list");
     const dashboardLoader = document.getElementById("dashboard-loader");
     const dashboardContent = document.getElementById("dashboard-content");
+
+    // Settings UI Elements
+    const settingsToggleBtn = document.getElementById("settings-toggle-btn");
+    const settingsModal = document.getElementById("settings-modal");
+    const settingsCloseBtn = document.getElementById("settings-close-btn");
+    const settingsBackendUrlInput = document.getElementById("settings-backend-url");
+    const settingsTestBtn = document.getElementById("settings-test-btn");
+    const settingsSaveBtn = document.getElementById("settings-save-btn");
+    const connectionStatusDot = document.getElementById("connection-status-dot");
+    const connectionStatusText = document.getElementById("connection-status-text");
+    const connectionAlertBanner = document.getElementById("connection-alert-banner");
+    const alertConfigBtn = document.getElementById("alert-config-btn");
 
     // Stat Cards
     const stockPriceEl = document.getElementById("stock-price");
@@ -1244,6 +1583,83 @@ document.addEventListener("DOMContentLoaded", () => {
         if (mainChart && currentStockData) {
             renderChart(currentStockData);
         }
+    });
+
+    // Settings Modal Logic
+    function openSettingsModal() {
+        settingsBackendUrlInput.value = localStorage.getItem("predictify_backend_url") || "";
+        settingsModal.classList.add("active");
+        checkConnectionStatus(false);
+    }
+    
+    function closeSettingsModal() {
+        settingsModal.classList.remove("active");
+    }
+    
+    settingsToggleBtn.addEventListener("click", openSettingsModal);
+    settingsCloseBtn.addEventListener("click", closeSettingsModal);
+    if (alertConfigBtn) {
+        alertConfigBtn.addEventListener("click", openSettingsModal);
+    }
+    
+    // Close modal on click outside content
+    settingsModal.addEventListener("click", (e) => {
+        if (e.target === settingsModal) {
+            closeSettingsModal();
+        }
+    });
+    
+    // Save changes
+    settingsSaveBtn.addEventListener("click", () => {
+        const newUrl = settingsBackendUrlInput.value.trim();
+        localStorage.setItem("predictify_backend_url", newUrl);
+        API_BASE_URL = getApiBaseUrl();
+        closeSettingsModal();
+        
+        // Retry loading
+        fetchPopularTickers();
+        const currentTicker = tickerInput.value.trim().toUpperCase() || "AAPL";
+        loadTickerData(currentTicker);
+    });
+    
+    // Test connection helper
+    async function checkConnectionStatus(silent = false) {
+        const testUrl = settingsBackendUrlInput.value.trim() || getApiBaseUrl();
+        if (!testUrl) {
+            if (!silent) {
+                connectionStatusDot.className = "status-indicator danger";
+                connectionStatusText.textContent = "No URL specified";
+            }
+            return false;
+        }
+        
+        try {
+            const response = await fetch(`${testUrl}/api/tickers`, {
+                headers: {
+                    "Bypass-Tunnel-Reminder": "true"
+                }
+            });
+            const data = await response.json();
+            if (Array.isArray(data)) {
+                if (!silent) {
+                    connectionStatusDot.className = "status-indicator success";
+                    connectionStatusText.textContent = "Connected";
+                }
+                return true;
+            }
+        } catch (e) {
+            console.error("Test connection failed", e);
+        }
+        
+        if (!silent) {
+            connectionStatusDot.className = "status-indicator danger";
+            connectionStatusText.textContent = "Offline / Connection Failed";
+        }
+        return false;
+    }
+    
+    settingsTestBtn.addEventListener("click", () => {
+        checkConnectionStatus(false);
     });
 
     // Table bodies
@@ -1299,8 +1715,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
                 quickTickersList.appendChild(pill);
             });
+            
+            if (connectionAlertBanner) connectionAlertBanner.style.display = "none";
         } catch (err) {
             console.error("Failed to load popular tickers", err);
+            if (connectionAlertBanner) connectionAlertBanner.style.display = "flex";
         }
     }
 
@@ -1322,13 +1741,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 currentStockData = payload.data;
                 renderDashboard(currentStockData);
                 showLoader(false);
+                if (connectionAlertBanner) connectionAlertBanner.style.display = "none";
             } else {
                 alert(`Error: ${payload.message}`);
                 showLoader(false);
             }
         } catch (error) {
             console.error("API error:", error);
-            alert("An error occurred while communicating with the model server.");
+            if (connectionAlertBanner) {
+                connectionAlertBanner.style.display = "flex";
+            } else {
+                alert("An error occurred while communicating with the model server.");
+            }
             showLoader(false);
         }
     }
